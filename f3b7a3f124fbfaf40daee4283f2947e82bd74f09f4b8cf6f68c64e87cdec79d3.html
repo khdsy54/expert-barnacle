@@ -1,0 +1,1323 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>UNO 420 - Smokey Edition</title>
+<link href="https://fonts.googleapis.com/css2?family=Permanent+Marker&family=Righteous&family=Nunito:wght@400;600;700;800&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+<style>
+:root {
+  --bg-primary: #0a0f0a;
+  --bg-secondary: #111a11;
+  --bg-card: #1a2a1a;
+  --text-primary: #d4e8c4;
+  --text-secondary: #8fb878;
+  --text-muted: #5a7a4a;
+  --accent-green: #3cb043;
+  --accent-lime: #7ed957;
+  --accent-gold: #d4a017;
+  --accent-purple: #6b3fa0;
+  --accent-smoke: rgba(180, 200, 170, 0.15);
+  --card-red: #d63031;
+  --card-blue: #0984e3;
+  --card-green: #00b894;
+  --card-yellow: #fdcb6e;
+  --card-wild: #2d3436;
+  --border-glow: rgba(60, 176, 67, 0.3);
+  --shadow-glow: 0 0 30px rgba(60, 176, 67, 0.2);
+  --smoke-opacity: 0.06;
+}
+html.dark {
+  --bg-primary: #0a0f0a;
+  --bg-secondary: #111a11;
+  --bg-card: #1a2a1a;
+  --text-primary: #d4e8c4;
+  --text-secondary: #8fb878;
+  --text-muted: #5a7a4a;
+}
+html:not(.dark) {
+  --bg-primary: #f0f5ec;
+  --bg-secondary: #e4eddc;
+  --bg-card: #ffffff;
+  --text-primary: #1a2a1a;
+  --text-secondary: #3a5a2a;
+  --text-muted: #6a8a5a;
+  --border-glow: rgba(60, 176, 67, 0.2);
+  --shadow-glow: 0 0 20px rgba(60, 176, 67, 0.1);
+  --smoke-opacity: 0.04;
+  --accent-smoke: rgba(60, 120, 50, 0.08);
+}
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body {
+  font-family: 'Nunito', sans-serif;
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  min-height: 100vh;
+  overflow-x: hidden;
+}
+/* ===== SMOKE BACKGROUND ===== */
+.smoke-bg {
+  position: fixed; inset: 0; z-index: 0; pointer-events: none; overflow: hidden;
+}
+.smoke-particle {
+  position: absolute;
+  border-radius: 50%;
+  background: radial-gradient(circle, var(--accent-smoke) 0%, transparent 70%);
+  animation: smokeFloat linear infinite;
+  opacity: var(--smoke-opacity);
+}
+@keyframes smokeFloat {
+  0% { transform: translateY(100vh) scale(0.5) rotate(0deg); opacity: 0; }
+  20% { opacity: var(--smoke-opacity); }
+  80% { opacity: var(--smoke-opacity); }
+  100% { transform: translateY(-20vh) scale(2.5) rotate(360deg); opacity: 0; }
+}
+/* ===== LEAF DECORATION ===== */
+.leaf-deco {
+  position: fixed; font-size: 24px; opacity: 0.08; pointer-events: none; z-index: 0;
+  animation: leafDrift 15s ease-in-out infinite;
+}
+@keyframes leafDrift {
+  0%, 100% { transform: rotate(-5deg) translateY(0); }
+  50% { transform: rotate(5deg) translateY(-15px); }
+}
+/* ===== MAIN CONTAINER ===== */
+.app-container {
+  position: relative; z-index: 1; min-height: 100vh;
+  display: flex; flex-direction: column; align-items: center;
+}
+/* ===== SCREEN MANAGEMENT ===== */
+.screen { display: none; width: 100%; max-width: 900px; padding: 16px; }
+.screen.active { display: flex; flex-direction: column; align-items: center; }
+/* ===== MENU SCREEN ===== */
+.logo-wrap { text-align: center; margin: 40px 0 20px; }
+.logo-title {
+  font-family: 'Permanent Marker', cursive;
+  font-size: clamp(3rem, 8vw, 5rem);
+  background: linear-gradient(135deg, var(--accent-green), var(--accent-lime), var(--accent-gold));
+  -webkit-background-clip: text; -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 20px rgba(60, 176, 67, 0.4));
+  line-height: 1.1;
+}
+.logo-sub {
+  font-family: 'Righteous', cursive;
+  font-size: clamp(1rem, 3vw, 1.4rem);
+  color: var(--text-muted);
+  letter-spacing: 6px; margin-top: 4px;
+}
+.logo-leaf { font-size: 2.5rem; margin: 8px 0; }
+.menu-buttons { display: flex; flex-direction: column; gap: 14px; width: 100%; max-width: 380px; margin-top: 30px; }
+.btn {
+  padding: 16px 24px; border: none; border-radius: 16px; font-family: 'Nunito', sans-serif;
+  font-size: 17px; font-weight: 700; cursor: pointer; transition: all 0.3s;
+  display: flex; align-items: center; justify-content: center; gap: 10px;
+  position: relative; overflow: hidden;
+}
+.btn-primary {
+  background: linear-gradient(135deg, var(--accent-green), #2d8a3e);
+  color: #fff; box-shadow: 0 4px 20px rgba(60, 176, 67, 0.3);
+}
+.btn-primary:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(60, 176, 67, 0.5); }
+.btn-secondary {
+  background: var(--bg-card); color: var(--text-primary);
+  border: 2px solid var(--border-glow);
+}
+.btn-secondary:hover { border-color: var(--accent-green); transform: translateY(-2px); }
+.btn-gold {
+  background: linear-gradient(135deg, var(--accent-gold), #b8860b);
+  color: #fff; box-shadow: 0 4px 20px rgba(212, 160, 23, 0.3);
+}
+.btn-gold:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(212, 160, 23, 0.5); }
+.btn-purple {
+  background: linear-gradient(135deg, var(--accent-purple), #5b2d8e);
+  color: #fff; box-shadow: 0 4px 20px rgba(107, 63, 160, 0.3);
+}
+.btn-purple:hover { transform: translateY(-2px); box-shadow: 0 6px 30px rgba(107, 63, 160, 0.5); }
+.btn-sm { padding: 10px 18px; font-size: 14px; border-radius: 12px; }
+.btn-danger {
+  background: linear-gradient(135deg, #c0392b, #a93226);
+  color: #fff;
+}
+/* ===== PRIVATE ROOM SCREEN ===== */
+.room-panel {
+  background: var(--bg-card); border-radius: 20px; padding: 28px;
+  border: 1px solid var(--border-glow); width: 100%; max-width: 500px;
+  box-shadow: var(--shadow-glow);
+}
+.room-panel h2 {
+  font-family: 'Righteous', cursive; font-size: 1.5rem;
+  color: var(--accent-lime); margin-bottom: 20px; text-align: center;
+}
+.input-group { margin-bottom: 16px; }
+.input-group label {
+  display: block; font-size: 14px; font-weight: 700;
+  color: var(--text-secondary); margin-bottom: 6px;
+}
+.input-field {
+  width: 100%; padding: 14px 16px; border-radius: 12px;
+  border: 2px solid var(--border-glow); background: var(--bg-secondary);
+  color: var(--text-primary); font-family: 'Nunito', sans-serif;
+  font-size: 16px; transition: border-color 0.3s; outline: none;
+}
+.input-field:focus { border-color: var(--accent-green); }
+.room-code-display {
+  background: var(--bg-secondary); border-radius: 16px; padding: 20px;
+  text-align: center; margin: 16px 0; border: 2px dashed var(--accent-green);
+}
+.room-code-display .code {
+  font-family: 'Permanent Marker', cursive; font-size: 2.2rem;
+  color: var(--accent-lime); letter-spacing: 6px;
+}
+.room-code-display .code-label {
+  font-size: 13px; color: var(--text-muted); margin-bottom: 6px;
+}
+.player-list {
+  list-style: none; margin: 16px 0;
+}
+.player-list li {
+  padding: 10px 14px; border-radius: 10px; margin-bottom: 6px;
+  background: var(--bg-secondary); display: flex; align-items: center; gap: 10px;
+  font-weight: 600; color: var(--text-primary);
+}
+.player-list li .player-icon { font-size: 20px; }
+.player-list li.host { border-left: 3px solid var(--accent-gold); }
+.invite-actions { display: flex; gap: 10px; margin: 12px 0; }
+.invite-actions .btn { flex: 1; }
+.divider {
+  display: flex; align-items: center; gap: 12px; margin: 24px 0;
+  color: var(--text-muted); font-size: 13px;
+}
+.divider::before, .divider::after {
+  content: ''; flex: 1; height: 1px; background: var(--border-glow);
+}
+/* ===== GAME SCREEN ===== */
+.game-header {
+  display: flex; justify-content: space-between; align-items: center;
+  width: 100%; padding: 8px 0; margin-bottom: 8px;
+}
+.game-header .turn-indicator {
+  font-family: 'Righteous', cursive; font-size: 1.1rem;
+  color: var(--accent-lime);
+}
+.game-header .direction-icon {
+  font-size: 1.2rem; color: var(--accent-gold);
+  transition: transform 0.5s;
+}
+.game-header .direction-icon.reversed { transform: scaleX(-1); }
+.opponents-row {
+  display: flex; gap: 12px; justify-content: center; flex-wrap: wrap;
+  width: 100%; margin-bottom: 12px;
+}
+.opponent-slot {
+  background: var(--bg-card); border-radius: 14px; padding: 10px 16px;
+  border: 2px solid transparent; text-align: center; min-width: 100px;
+  transition: all 0.3s;
+}
+.opponent-slot.active-turn { border-color: var(--accent-lime); box-shadow: 0 0 15px rgba(60, 176, 67, 0.3); }
+.opponent-slot .opp-name { font-weight: 700; font-size: 13px; color: var(--text-secondary); }
+.opponent-slot .opp-cards { font-size: 22px; margin-top: 2px; }
+.opponent-slot .opp-count { font-size: 12px; color: var(--text-muted); }
+.opponent-slot .uno-badge {
+  background: var(--card-red); color: #fff; font-size: 10px; font-weight: 800;
+  padding: 2px 6px; border-radius: 6px; display: inline-block; margin-top: 4px;
+  animation: unoPulse 0.6s ease-in-out infinite alternate;
+}
+@keyframes unoPulse { from { transform: scale(1); } to { transform: scale(1.15); } }
+/* ===== PLAY AREA ===== */
+.play-area {
+  display: flex; align-items: center; justify-content: center; gap: 24px;
+  margin: 16px 0; position: relative;
+}
+.draw-pile, .discard-pile {
+  width: 90px; height: 135px; border-radius: 12px; display: flex;
+  align-items: center; justify-content: center; cursor: pointer;
+  transition: all 0.3s; position: relative;
+}
+.draw-pile {
+  background: linear-gradient(135deg, #1a3a1a, #0d1f0d);
+  border: 3px solid var(--accent-green);
+  box-shadow: 0 4px 20px rgba(60, 176, 67, 0.2);
+}
+.draw-pile:hover { transform: scale(1.05); box-shadow: 0 6px 30px rgba(60, 176, 67, 0.4); }
+.draw-pile .pile-icon { font-size: 28px; }
+.draw-pile .pile-label {
+  position: absolute; bottom: -22px; font-size: 11px;
+  color: var(--text-muted); font-weight: 700; white-space: nowrap;
+}
+.discard-pile {
+  border: 3px solid var(--text-muted); overflow: hidden;
+}
+.discard-pile .pile-label {
+  position: absolute; bottom: -22px; font-size: 11px;
+  color: var(--text-muted); font-weight: 700; white-space: nowrap;
+}
+/* ===== UNO CARDS ===== */
+.uno-card {
+  width: 72px; height: 108px; border-radius: 10px; position: relative;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Righteous', cursive; font-size: 1.6rem; color: #fff;
+  cursor: pointer; transition: all 0.25s; flex-shrink: 0;
+  box-shadow: 0 3px 10px rgba(0,0,0,0.3);
+  border: 3px solid rgba(255,255,255,0.25);
+}
+.uno-card::before {
+  content: ''; position: absolute; inset: 6px; border-radius: 50%;
+  background: rgba(255,255,255,0.12); transform: rotate(-15deg);
+  border: 2px solid rgba(255,255,255,0.15);
+}
+.uno-card.card-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.uno-card.card-blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+.uno-card.card-green { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.uno-card.card-yellow { background: linear-gradient(135deg, #f1c40f, #d4ac0f); color: #333; }
+.uno-card.card-wild {
+  background: conic-gradient(from 0deg, #e74c3c, #3498db, #27ae60, #f1c40f, #e74c3c);
+}
+.uno-card .card-value {
+  position: relative; z-index: 1; text-shadow: 1px 1px 3px rgba(0,0,0,0.4);
+  font-size: inherit; line-height: 1;
+}
+.uno-card .card-corner-top, .uno-card .card-corner-bottom {
+  position: absolute; font-size: 0.55rem; z-index: 1;
+  text-shadow: 1px 1px 2px rgba(0,0,0,0.3);
+}
+.uno-card .card-corner-top { top: 5px; left: 7px; }
+.uno-card .card-corner-bottom { bottom: 5px; right: 7px; transform: rotate(180deg); }
+.uno-card.playable { cursor: pointer; }
+.uno-card.playable:hover {
+  transform: translateY(-18px) scale(1.08);
+  box-shadow: 0 10px 30px rgba(60, 176, 67, 0.4);
+  z-index: 10;
+}
+.uno-card.not-playable { opacity: 0.55; cursor: not-allowed; }
+/* ===== PLAYER HAND ===== */
+.hand-area {
+  width: 100%; margin-top: 16px; padding-bottom: 20px;
+}
+.hand-label {
+  font-family: 'Righteous', cursive; font-size: 1rem;
+  color: var(--text-secondary); margin-bottom: 8px;
+  display: flex; align-items: center; gap: 8px;
+}
+.hand-cards {
+  display: flex; gap: -8px; overflow-x: auto; padding: 12px 4px 20px;
+  scroll-behavior: smooth; -webkit-overflow-scrolling: touch;
+}
+.hand-cards .uno-card { margin-right: -12px; }
+.hand-cards .uno-card:last-child { margin-right: 0; }
+/* ===== ACTION BUTTONS ===== */
+.action-bar {
+  display: flex; gap: 10px; justify-content: center;
+  flex-wrap: wrap; margin: 8px 0;
+}
+/* ===== COLOR PICKER MODAL ===== */
+.modal-overlay {
+  position: fixed; inset: 0; background: rgba(0,0,0,0.7);
+  display: none; align-items: center; justify-content: center;
+  z-index: 100; backdrop-filter: blur(4px);
+}
+.modal-overlay.show { display: flex; }
+.modal-box {
+  background: var(--bg-card); border-radius: 20px; padding: 30px;
+  border: 2px solid var(--border-glow); max-width: 360px; width: 90%;
+  text-align: center; box-shadow: var(--shadow-glow);
+  animation: modalPop 0.3s ease-out;
+}
+@keyframes modalPop {
+  from { transform: scale(0.8); opacity: 0; }
+  to { transform: scale(1); opacity: 1; }
+}
+.modal-box h3 {
+  font-family: 'Righteous', cursive; color: var(--accent-lime);
+  margin-bottom: 20px; font-size: 1.3rem;
+}
+.color-choices {
+  display: grid; grid-template-columns: 1fr 1fr; gap: 12px;
+}
+.color-choice {
+  padding: 16px; border-radius: 14px; border: 3px solid transparent;
+  cursor: pointer; font-weight: 800; font-size: 15px; color: #fff;
+  transition: all 0.2s;
+}
+.color-choice:hover { transform: scale(1.08); border-color: #fff; }
+.color-choice.cc-red { background: linear-gradient(135deg, #e74c3c, #c0392b); }
+.color-choice.cc-blue { background: linear-gradient(135deg, #3498db, #2980b9); }
+.color-choice.cc-green { background: linear-gradient(135deg, #27ae60, #1e8449); }
+.color-choice.cc-yellow { background: linear-gradient(135deg, #f1c40f, #d4ac0f); color: #333; }
+/* ===== GAME OVER ===== */
+.game-over-content {
+  text-align: center;
+}
+.game-over-content h2 {
+  font-family: 'Permanent Marker', cursive; font-size: 2rem;
+  color: var(--accent-gold); margin-bottom: 8px;
+}
+.game-over-content p { color: var(--text-secondary); margin-bottom: 20px; font-size: 1.1rem; }
+.game-over-content .winner-leaf { font-size: 3rem; margin-bottom: 12px; }
+/* ===== TOAST ===== */
+.toast-container {
+  position: fixed; top: 20px; right: 20px; z-index: 200;
+  display: flex; flex-direction: column; gap: 8px;
+}
+.toast {
+  background: var(--bg-card); border: 1px solid var(--border-glow);
+  border-radius: 12px; padding: 12px 20px; font-weight: 600;
+  font-size: 14px; color: var(--text-primary);
+  box-shadow: var(--shadow-glow);
+  animation: toastIn 0.3s ease-out, toastOut 0.3s ease-in 2.2s forwards;
+}
+@keyframes toastIn { from { transform: translateX(100px); opacity: 0; } to { transform: translateX(0); opacity: 1; } }
+@keyframes toastOut { from { opacity: 1; } to { opacity: 0; transform: translateY(-10px); } }
+/* ===== SETTINGS ROW ===== */
+.settings-row {
+  display: flex; align-items: center; gap: 12px; margin: 8px 0;
+}
+.settings-row label { font-weight: 700; color: var(--text-secondary); font-size: 14px; }
+.settings-row select {
+  padding: 8px 12px; border-radius: 10px; background: var(--bg-secondary);
+  color: var(--text-primary); border: 2px solid var(--border-glow);
+  font-family: 'Nunito', sans-serif; font-size: 15px; outline: none;
+}
+/* ===== UNO CALL BUTTON ===== */
+.uno-call-btn {
+  position: fixed; bottom: 100px; right: 20px; z-index: 50;
+  width: 70px; height: 70px; border-radius: 50%;
+  background: linear-gradient(135deg, #e74c3c, #c0392b);
+  color: #fff; border: none; font-family: 'Permanent Marker', cursive;
+  font-size: 1.1rem; cursor: pointer; box-shadow: 0 4px 20px rgba(231, 76, 60, 0.5);
+  transition: all 0.3s; display: none;
+  animation: unoBtnPulse 1s ease-in-out infinite alternate;
+}
+.uno-call-btn.visible { display: flex; align-items: center; justify-content: center; }
+@keyframes unoBtnPulse {
+  from { box-shadow: 0 4px 20px rgba(231, 76, 60, 0.5); }
+  to { box-shadow: 0 8px 40px rgba(231, 76, 60, 0.8); }
+}
+/* ===== RESPONSIVE ===== */
+@media (max-width: 600px) {
+  .play-area { gap: 16px; }
+  .draw-pile, .discard-pile { width: 70px; height: 105px; }
+  .uno-card { width: 58px; height: 87px; font-size: 1.2rem; }
+  .hand-cards .uno-card { margin-right: -16px; }
+  .opponent-slot { min-width: 80px; padding: 8px 10px; }
+  .room-panel { padding: 20px; }
+}
+/* ===== ANIMATIONS ===== */
+@keyframes cardDeal {
+  from { transform: translateY(-100px) rotate(-20deg); opacity: 0; }
+  to { transform: translateY(0) rotate(0deg); opacity: 1; }
+}
+.card-dealt { animation: cardDeal 0.4s ease-out; }
+@keyframes sparkBurst {
+  0% { transform: scale(0); opacity: 1; }
+  100% { transform: scale(3); opacity: 0; }
+}
+.current-color-indicator {
+  display: flex; align-items: center; gap: 8px;
+  font-size: 13px; font-weight: 700; color: var(--text-muted);
+}
+.color-dot {
+  width: 18px; height: 18px; border-radius: 50%;
+  border: 2px solid rgba(255,255,255,0.3);
+}
+.skip-draw-msg {
+  font-family: 'Righteous', cursive; color: var(--accent-gold);
+  font-size: 1.1rem; text-align: center; margin: 6px 0;
+  min-height: 24px;
+}
+.back-btn {
+  align-self: flex-start; margin-bottom: 16px;
+}
+/* Copy feedback */
+.copy-feedback {
+  color: var(--accent-lime); font-size: 12px; font-weight: 700;
+  margin-top: 4px; min-height: 18px;
+}
+</style>
+</head>
+<body>
+<!-- SMOKE BACKGROUND PARTICLES -->
+<div class="smoke-bg" id="smokeBg"></div>
+
+<!-- LEAF DECORATIONS -->
+<div class="leaf-deco" style="top:10%;left:5%;">🍃</div>
+<div class="leaf-deco" style="top:30%;right:8%;animation-delay:-3s;">🌿</div>
+<div class="leaf-deco" style="top:60%;left:3%;animation-delay:-7s;">🍃</div>
+<div class="leaf-deco" style="top:80%;right:5%;animation-delay:-11s;">🌿</div>
+<div class="leaf-deco" style="top:50%;left:50%;animation-delay:-5s;">🍂</div>
+
+<!-- TOAST CONTAINER -->
+<div class="toast-container" id="toastContainer"></div>
+
+<!-- UNO CALL BUTTON -->
+<button class="uno-call-btn" id="unoCallBtn" onclick="callUno()">UNO!</button>
+
+<!-- COLOR PICKER MODAL -->
+<div class="modal-overlay" id="colorModal">
+  <div class="modal-box">
+    <h3>🍃 Pick a Color, Homie 🍃</h3>
+    <div class="color-choices">
+      <div class="color-choice cc-red" onclick="pickColor('red')">🔴 Red</div>
+      <div class="color-choice cc-blue" onclick="pickColor('blue')">🔵 Blue</div>
+      <div class="color-choice cc-green" onclick="pickColor('green')">🟢 Green</div>
+      <div class="color-choice cc-yellow" onclick="pickColor('yellow')">🟡 Yellow</div>
+    </div>
+  </div>
+</div>
+
+<!-- GAME OVER MODAL -->
+<div class="modal-overlay" id="gameOverModal">
+  <div class="modal-box game-over-content">
+    <div class="winner-leaf">🏆🍃</div>
+    <h2 id="winnerText">You Win!</h2>
+    <p id="winnerSub">Absolute legend, rolled up the competition 💨</p>
+    <div style="display:flex;gap:10px;justify-content:center;margin-top:16px;">
+      <button class="btn btn-primary" onclick="startGame()">Run It Back 🔥</button>
+      <button class="btn btn-secondary" onclick="showScreen('menu')">Menu</button>
+    </div>
+  </div>
+</div>
+
+<!-- APP -->
+<div class="app-container">
+
+  <!-- ===== MENU SCREEN ===== -->
+  <div class="screen active" id="screen-menu">
+    <div class="logo-wrap">
+      <div class="logo-leaf">🍃💨🍃</div>
+      <div class="logo-title">UNO 420</div>
+      <div class="logo-sub">SMOKEY EDITION</div>
+    </div>
+    <div class="menu-buttons">
+      <button class="btn btn-primary" onclick="showScreen('setup')">
+        <i class="fas fa-play"></i> Quick Play
+      </button>
+      <button class="btn btn-gold" onclick="showScreen('create-room')">
+        <i class="fas fa-users"></i> Create Private Room
+      </button>
+      <button class="btn btn-purple" onclick="showScreen('join-room')">
+        <i class="fas fa-door-open"></i> Join Private Room
+      </button>
+      <button class="btn btn-secondary" onclick="showScreen('rules')">
+        <i class="fas fa-book"></i> How to Play
+      </button>
+    </div>
+    <p style="margin-top:40px;font-size:12px;color:var(--text-muted);text-align:center;">
+      🌿 Puff puff pass... the cards 🌿
+    </p>
+  </div>
+
+  <!-- ===== SETUP SCREEN ===== -->
+  <div class="screen" id="screen-setup">
+    <button class="btn btn-sm btn-secondary back-btn" onclick="showScreen('menu')">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="room-panel">
+      <h2>🍃 Game Setup</h2>
+      <div class="input-group">
+        <label>Your Name</label>
+        <input class="input-field" id="playerNameInput" placeholder="Enter your stoner tag..." maxlength="16" value="Player 1">
+      </div>
+      <div class="settings-row">
+        <label>Opponents:</label>
+        <select id="opponentCount">
+          <option value="1">1 Bot</option>
+          <option value="2" selected>2 Bots</option>
+          <option value="3">3 Bots</option>
+        </select>
+      </div>
+      <div class="settings-row">
+        <label>Difficulty:</label>
+        <select id="difficultySelect">
+          <option value="easy">Chill 🌿</option>
+          <option value="medium" selected>Lifted 💨</option>
+          <option value="hard">Blazed 🔥</option>
+        </select>
+      </div>
+      <button class="btn btn-primary" style="width:100%;margin-top:20px;" onclick="startGame()">
+        <i class="fas fa-fire"></i> Light It Up
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== CREATE ROOM SCREEN ===== -->
+  <div class="screen" id="screen-create-room">
+    <button class="btn btn-sm btn-secondary back-btn" onclick="showScreen('menu')">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="room-panel">
+      <h2>🔥 Create Private Sesh</h2>
+      <div class="input-group">
+        <label>Your Name</label>
+        <input class="input-field" id="hostNameInput" placeholder="Enter your name..." maxlength="16" value="Host">
+      </div>
+      <div class="input-group">
+        <label>Room Name (optional)</label>
+        <input class="input-field" id="roomNameInput" placeholder="e.g. Chill Sesh 420" maxlength="24">
+      </div>
+      <div class="settings-row">
+        <label>Max Players:</label>
+        <select id="maxPlayersSelect">
+          <option value="2">2</option>
+          <option value="3">3</option>
+          <option value="4" selected>4</option>
+        </select>
+      </div>
+      <button class="btn btn-gold" style="width:100%;margin-top:12px;" onclick="createRoom()">
+        <i class="fas fa-cannabis"></i> Create Room
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== ROOM LOBBY SCREEN ===== -->
+  <div class="screen" id="screen-room-lobby">
+    <button class="btn btn-sm btn-secondary back-btn" onclick="showScreen('menu')">
+      <i class="fas fa-arrow-left"></i> Leave Room
+    </button>
+    <div class="room-panel">
+      <h2 id="lobbyRoomName">🍃 Chill Sesh</h2>
+      <div class="room-code-display">
+        <div class="code-label">ROOM CODE</div>
+        <div class="code" id="roomCodeDisplay">----</div>
+      </div>
+      <div class="invite-actions">
+        <button class="btn btn-sm btn-secondary" onclick="copyRoomCode()">
+          <i class="fas fa-copy"></i> Copy Code
+        </button>
+        <button class="btn btn-sm btn-purple" onclick="shareRoom()">
+          <i class="fas fa-share-alt"></i> Share Invite
+        </button>
+      </div>
+      <div class="copy-feedback" id="copyFeedback"></div>
+      <div style="font-size:13px;color:var(--text-muted);margin:8px 0;">Players in the sesh:</div>
+      <ul class="player-list" id="lobbyPlayerList"></ul>
+      <button class="btn btn-primary" style="width:100%;margin-top:16px;" onclick="startRoomGame()">
+        <i class="fas fa-fire"></i> Start Game
+      </button>
+      <p style="font-size:12px;color:var(--text-muted);margin-top:10px;text-align:center;">
+        Bots will fill empty spots 🤖💨
+      </p>
+    </div>
+  </div>
+
+  <!-- ===== JOIN ROOM SCREEN ===== -->
+  <div class="screen" id="screen-join-room">
+    <button class="btn btn-sm btn-secondary back-btn" onclick="showScreen('menu')">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="room-panel">
+      <h2>🚪 Join the Sesh</h2>
+      <div class="input-group">
+        <label>Your Name</label>
+        <input class="input-field" id="joinNameInput" placeholder="Enter your name..." maxlength="16" value="Player">
+      </div>
+      <div class="input-group">
+        <label>Room Code</label>
+        <input class="input-field" id="joinCodeInput" placeholder="Enter 6-digit code..." maxlength="6"
+               style="font-family:'Permanent Marker',cursive;font-size:1.5rem;letter-spacing:6px;text-align:center;text-transform:uppercase;">
+      </div>
+      <button class="btn btn-purple" style="width:100%;margin-top:16px;" onclick="joinRoom()">
+        <i class="fas fa-door-open"></i> Join Room
+      </button>
+    </div>
+  </div>
+
+  <!-- ===== RULES SCREEN ===== -->
+  <div class="screen" id="screen-rules">
+    <button class="btn btn-sm btn-secondary back-btn" onclick="showScreen('menu')">
+      <i class="fas fa-arrow-left"></i> Back
+    </button>
+    <div class="room-panel" style="max-width:600px;">
+      <h2>📖 How to Blaze Through UNO</h2>
+      <div style="line-height:1.8;font-size:14px;color:var(--text-secondary);">
+        <p><strong style="color:var(--accent-lime);">🎯 Goal:</strong> Be the first to play all your cards.</p><br>
+        <p><strong style="color:var(--accent-lime);">🃏 Gameplay:</strong></p>
+        <ul style="padding-left:20px;margin:8px 0;">
+          <li>Match the top discard card by <strong>color</strong> or <strong>number/symbol</strong></li>
+          <li>Can't play? Draw from the pile 🍃</li>
+          <li>Play drawn card if it matches, otherwise turn passes</li>
+        </ul><br>
+        <p><strong style="color:var(--accent-lime);">🌀 Special Cards:</strong></p>
+        <ul style="padding-left:20px;margin:8px 0;">
+          <li><strong>Skip (🚫)</strong> — Next player loses their turn</li>
+          <li><strong>Reverse (🔄)</strong> — Reverses play direction</li>
+          <li><strong>Draw Two (+2)</strong> — Next player draws 2 cards & skips</li>
+          <li><strong>Wild (🌈)</strong> — Play anytime, choose the color</li>
+          <li><strong>Wild Draw Four (+4)</strong> — Choose color + next player draws 4</li>
+        </ul><br>
+        <p><strong style="color:var(--accent-lime);">🔥 UNO Call:</strong> Hit the UNO button when you have 1 card left! Forget, and you draw 2 penalty cards. 💨</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- ===== GAME SCREEN ===== -->
+  <div class="screen" id="screen-game">
+    <div class="game-header">
+      <div class="current-color-indicator">
+        <div class="color-dot" id="currentColorDot"></div>
+        <span id="currentColorText">—</span>
+      </div>
+      <div class="turn-indicator" id="turnIndicator">Your Turn</div>
+      <div class="direction-icon" id="directionIcon">
+        <i class="fas fa-arrow-right"></i>
+      </div>
+    </div>
+    <div class="opponents-row" id="opponentsRow"></div>
+    <div class="skip-draw-msg" id="skipDrawMsg"></div>
+    <div class="play-area">
+      <div class="draw-pile" id="drawPile" onclick="drawCard()">
+        <span class="pile-icon">🍃</span>
+        <span class="pile-label">DRAW</span>
+      </div>
+      <div class="discard-pile" id="discardPile">
+        <span class="pile-label">DISCARD</span>
+      </div>
+    </div>
+    <div class="action-bar">
+      <button class="btn btn-sm btn-secondary" id="passBtn" onclick="passTurn()" style="display:none;">
+        <i class="fas fa-forward"></i> Pass
+      </button>
+    </div>
+    <div class="hand-area">
+      <div class="hand-label">
+        <span>🖐️</span>
+        <span id="handLabel">Your Hand</span>
+        <span style="font-size:12px;color:var(--text-muted);" id="handCount">(7)</span>
+      </div>
+      <div class="hand-cards" id="handCards"></div>
+    </div>
+  </div>
+</div>
+
+<script>
+/* =========================================
+   UNO 420 — SMOKEY EDITION
+   ========================================= */
+
+// ===== DARK MODE DETECT =====
+if (window.matchMedia && window.matchMedia('(prefers-color-scheme: dark)').matches) {
+  document.documentElement.classList.add('dark');
+}
+window.matchMedia('(prefers-color-scheme: dark)').addEventListener('change', event => {
+  if (event.matches) {
+    document.documentElement.classList.add('dark');
+  } else {
+    document.documentElement.classList.remove('dark');
+  }
+});
+
+// ===== SMOKE PARTICLES =====
+(function initSmoke() {
+  const bg = document.getElementById('smokeBg');
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'smoke-particle';
+    const size = 80 + Math.random() * 200;
+    p.style.width = size + 'px';
+    p.style.height = size + 'px';
+    p.style.left = Math.random() * 100 + '%';
+    p.style.animationDuration = (12 + Math.random() * 18) + 's';
+    p.style.animationDelay = -(Math.random() * 20) + 's';
+    bg.appendChild(p);
+  }
+})();
+
+// ===== SCREEN MANAGEMENT =====
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  const el = document.getElementById('screen-' + id);
+  if (el) el.classList.add('active');
+  // hide UNO button when not in game
+  const unoBtn = document.getElementById('unoCallBtn');
+  if (id !== 'game') {
+    unoBtn.classList.remove('visible');
+    document.getElementById('gameOverModal').classList.remove('show');
+  }
+}
+
+// ===== TOAST =====
+function showToast(msg) {
+  const container = document.getElementById('toastContainer');
+  const toast = document.createElement('div');
+  toast.className = 'toast';
+  toast.textContent = msg;
+  container.appendChild(toast);
+  setTimeout(() => { if (toast.parentNode) toast.parentNode.removeChild(toast); }, 2600);
+}
+
+// ===== GAME STATE =====
+const COLORS = ['red', 'blue', 'green', 'yellow'];
+const VALUES = ['0','1','2','3','4','5','6','7','8','9','skip','reverse','draw2'];
+const DISPLAY = {skip:'🚫', reverse:'🔄', draw2:'+2', wild:'🌈', wild4:'+4'};
+const BOT_NAMES = ['Snoop 🐕','Cheech 🌿','Chong 💨','Marley 🎵','Willie 🤠','Khalifa 🎤','Woody 🌲'];
+
+let game = null;
+
+function createDeck() {
+  const deck = [];
+  for (const color of COLORS) {
+    deck.push({color, value: '0'});
+    for (let i = 0; i < 2; i++) {
+      for (const v of VALUES.slice(1)) {
+        deck.push({color, value: v});
+      }
+    }
+  }
+  for (let i = 0; i < 4; i++) {
+    deck.push({color: 'wild', value: 'wild'});
+    deck.push({color: 'wild', value: 'wild4'});
+  }
+  return deck;
+}
+
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i + 1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+function startGame() {
+  const nameInput = document.getElementById('playerNameInput');
+  const name = (nameInput.value.trim()) || 'Player 1';
+  const oppCount = parseInt(document.getElementById('opponentCount').value);
+  const difficulty = document.getElementById('difficultySelect').value;
+
+  const shuffledBots = shuffle([...BOT_NAMES]);
+  const players = [{name, isHuman: true, hand: [], calledUno: false}];
+  for (let i = 0; i < oppCount; i++) {
+    players.push({name: shuffledBots[i], isHuman: false, hand: [], calledUno: false});
+  }
+
+  const deck = shuffle(createDeck());
+  // deal 7 cards each
+  for (const p of players) {
+    for (let i = 0; i < 7; i++) p.hand.push(deck.pop());
+  }
+  // find starting card (non-wild, non-action)
+  let startCard;
+  while (true) {
+    startCard = deck.pop();
+    if (startCard.color !== 'wild' && !['skip','reverse','draw2'].includes(startCard.value)) break;
+    deck.unshift(startCard);
+    shuffle(deck);
+  }
+
+  game = {
+    players,
+    deck,
+    discard: [startCard],
+    currentPlayer: 0,
+    direction: 1,
+    currentColor: startCard.color,
+    difficulty,
+    hasDrawn: false,
+    pendingColorPick: null,
+    gameOver: false,
+    skipMessage: ''
+  };
+
+  showScreen('game');
+  renderGame();
+  if (!game.players[0].isHuman || game.currentPlayer !== 0) {
+    maybeRunBotTurn();
+  }
+}
+
+function startRoomGame() {
+  // Use room settings to start game
+  const name = document.getElementById('hostNameInput').value.trim() || 'Host';
+  document.getElementById('playerNameInput').value = name;
+
+  const maxP = parseInt(document.getElementById('maxPlayersSelect').value);
+  const oppCount = maxP - 1;
+  document.getElementById('opponentCount').value = Math.min(oppCount, 3).toString();
+  document.getElementById('difficultySelect').value = 'medium';
+  startGame();
+}
+
+// ===== PRIVATE ROOMS =====
+let currentRoom = null;
+
+function generateRoomCode() {
+  const chars = 'ABCDEFGHJKLMNPQRSTUVWXYZ23456789';
+  let code = '';
+  for (let i = 0; i < 6; i++) code += chars[Math.floor(Math.random() * chars.length)];
+  return code;
+}
+
+function createRoom() {
+  const hostName = document.getElementById('hostNameInput').value.trim() || 'Host';
+  const roomName = document.getElementById('roomNameInput').value.trim() || 'Chill Sesh 🍃';
+  const maxPlayers = parseInt(document.getElementById('maxPlayersSelect').value);
+  const code = generateRoomCode();
+
+  currentRoom = {
+    code,
+    name: roomName,
+    maxPlayers,
+    players: [{name: hostName, isHost: true}]
+  };
+
+  showRoomLobby();
+  showScreen('room-lobby');
+  showToast('Room created! Share the code 💨');
+}
+
+function showRoomLobby() {
+  if (!currentRoom) return;
+  document.getElementById('lobbyRoomName').textContent = '🍃 ' + currentRoom.name;
+  document.getElementById('roomCodeDisplay').textContent = currentRoom.code;
+
+  const list = document.getElementById('lobbyPlayerList');
+  list.innerHTML = '';
+  currentRoom.players.forEach(p => {
+    const li = document.createElement('li');
+    li.className = p.isHost ? 'host' : '';
+    li.innerHTML = '<span class="player-icon">' + (p.isHost ? '👑' : '🍃') + '</span>' +
+                   '<span>' + escapeHtml(p.name) + '</span>' +
+                   (p.isHost ? '<span style="margin-left:auto;font-size:11px;color:var(--accent-gold);">HOST</span>' : '');
+    list.appendChild(li);
+  });
+
+  // show empty slots
+  for (let i = currentRoom.players.length; i < currentRoom.maxPlayers; i++) {
+    const li = document.createElement('li');
+    li.style.opacity = '0.4';
+    li.innerHTML = '<span class="player-icon">⏳</span><span>Waiting for player...</span>';
+    list.appendChild(li);
+  }
+}
+
+function copyRoomCode() {
+  if (!currentRoom) return;
+  const feedback = document.getElementById('copyFeedback');
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(currentRoom.code).then(() => {
+      feedback.textContent = '✅ Code copied!';
+      setTimeout(() => { feedback.textContent = ''; }, 2000);
+    });
+  } else {
+    feedback.textContent = 'Code: ' + currentRoom.code;
+  }
+}
+
+function shareRoom() {
+  if (!currentRoom) return;
+  const text = '🍃💨 Join my UNO 420 sesh!\nRoom: ' + currentRoom.name + '\nCode: ' + currentRoom.code + '\nPuff puff pass the cards! 🃏🔥';
+  if (navigator.clipboard && navigator.clipboard.writeText) {
+    navigator.clipboard.writeText(text).then(() => {
+      showToast('Invite copied to clipboard! 📋');
+    });
+  } else {
+    showToast('Share this code: ' + currentRoom.code);
+  }
+}
+
+function joinRoom() {
+  const name = document.getElementById('joinNameInput').value.trim() || 'Player';
+  const code = document.getElementById('joinCodeInput').value.trim().toUpperCase();
+  if (code.length < 4) {
+    showToast('Enter a valid room code! 🤨');
+    return;
+  }
+
+  // Simulated join — in a real app this would be a server call
+  currentRoom = {
+    code,
+    name: 'Sesh Room 🍃',
+    maxPlayers: 4,
+    players: [
+      {name: 'Host 👑', isHost: true},
+      {name, isHost: false}
+    ]
+  };
+
+  // Simulate more players joining
+  setTimeout(() => {
+    if (currentRoom && currentRoom.code === code) {
+      const extraNames = shuffle([...BOT_NAMES]);
+      currentRoom.players.push({name: extraNames[0], isHost: false});
+      showRoomLobby();
+      showToast(extraNames[0] + ' joined the sesh! 🍃');
+    }
+  }, 2000);
+
+  showRoomLobby();
+  showScreen('room-lobby');
+  showToast('Joined the sesh! 💨');
+}
+
+// ===== RENDERING =====
+function escapeHtml(str) {
+  const div = document.createElement('div');
+  div.textContent = str;
+  return div.innerHTML;
+}
+
+function getCardClass(card) {
+  if (card.color === 'wild') return 'card-wild';
+  return 'card-' + card.color;
+}
+
+function getCardDisplay(card) {
+  if (DISPLAY[card.value]) return DISPLAY[card.value];
+  return card.value;
+}
+
+function canPlay(card) {
+  if (!game || game.currentPlayer !== 0 || game.gameOver) return false;
+  if (card.color === 'wild') return true;
+  const top = game.discard[game.discard.length - 1];
+  return card.color === game.currentColor || card.value === top.value;
+}
+
+function renderCard(card, playable, onclick) {
+  const div = document.createElement('div');
+  div.className = 'uno-card ' + getCardClass(card) + (playable ? ' playable' : ' not-playable');
+  const display = getCardDisplay(card);
+  div.innerHTML = '<span class="card-corner-top">' + display + '</span>' +
+                  '<span class="card-value">' + display + '</span>' +
+                  '<span class="card-corner-bottom">' + display + '</span>';
+  if (onclick) div.addEventListener('click', onclick);
+  return div;
+}
+
+function renderGame() {
+  if (!game) return;
+
+  // Turn indicator
+  const ti = document.getElementById('turnIndicator');
+  const cp = game.players[game.currentPlayer];
+  ti.textContent = cp.isHuman ? '🔥 Your Turn' : '💨 ' + cp.name + "'s Turn";
+
+  // Direction
+  const di = document.getElementById('directionIcon');
+  di.classList.toggle('reversed', game.direction === -1);
+
+  // Current color
+  const dot = document.getElementById('currentColorDot');
+  const colorMap = {red:'#e74c3c', blue:'#3498db', green:'#27ae60', yellow:'#f1c40f'};
+  dot.style.background = colorMap[game.currentColor] || '#888';
+  document.getElementById('currentColorText').textContent =
+    game.currentColor.charAt(0).toUpperCase() + game.currentColor.slice(1);
+
+  // Opponents
+  const row = document.getElementById('opponentsRow');
+  row.innerHTML = '';
+  for (let i = 1; i < game.players.length; i++) {
+    const p = game.players[i];
+    const slot = document.createElement('div');
+    slot.className = 'opponent-slot' + (game.currentPlayer === i ? ' active-turn' : '');
+    let cardsStr = '';
+    for (let c = 0; c < Math.min(p.hand.length, 10); c++) cardsStr += '🂠';
+    if (p.hand.length > 10) cardsStr += '…';
+    slot.innerHTML = '<div class="opp-name">' + escapeHtml(p.name) + '</div>' +
+                     '<div class="opp-cards">' + cardsStr + '</div>' +
+                     '<div class="opp-count">' + p.hand.length + ' cards</div>' +
+                     (p.hand.length === 1 ? '<div class="uno-badge">UNO!</div>' : '');
+    row.appendChild(slot);
+  }
+
+  // Discard pile
+  const dp = document.getElementById('discardPile');
+  const topCard = game.discard[game.discard.length - 1];
+  dp.innerHTML = '';
+  const tc = renderCard(topCard, false);
+  tc.style.cursor = 'default';
+  tc.classList.remove('not-playable');
+  dp.appendChild(tc);
+  dp.innerHTML += '<span class="pile-label">DISCARD</span>';
+
+  // Skip/draw message
+  document.getElementById('skipDrawMsg').textContent = game.skipMessage || '';
+
+  // Hand
+  const hc = document.getElementById('handCards');
+  hc.innerHTML = '';
+  const hand = game.players[0].hand;
+  const isMyTurn = game.currentPlayer === 0;
+  hand.forEach((card, idx) => {
+    const playable = isMyTurn && canPlay(card) && !game.hasDrawn;
+    const cardEl = renderCard(card, isMyTurn && canPlay(card), isMyTurn && canPlay(card) ? () => playCard(idx) : null);
+    cardEl.classList.add('card-dealt');
+    cardEl.style.animationDelay = (idx * 0.03) + 's';
+    hc.appendChild(cardEl);
+  });
+  document.getElementById('handCount').textContent = '(' + hand.length + ')';
+
+  // Pass button
+  document.getElementById('passBtn').style.display = (isMyTurn && game.hasDrawn) ? '' : 'none';
+
+  // UNO button
+  const unoBtn = document.getElementById('unoCallBtn');
+  if (hand.length === 2 && isMyTurn && !game.players[0].calledUno) {
+    unoBtn.classList.add('visible');
+  } else {
+    unoBtn.classList.remove('visible');
+  }
+}
+
+// ===== GAME LOGIC =====
+function drawFromDeck() {
+  if (game.deck.length === 0) {
+    // reshuffle discard into deck
+    const top = game.discard.pop();
+    game.deck = shuffle(game.discard.map(c => {
+      if (c.color === 'wild' || c.value === 'wild' || c.value === 'wild4') {
+        return {color: 'wild', value: c.value};
+      }
+      return c;
+    }));
+    game.discard = [top];
+  }
+  return game.deck.pop();
+}
+
+function nextPlayer() {
+  game.currentPlayer = (game.currentPlayer + game.direction + game.players.length) % game.players.length;
+}
+
+function playCard(idx) {
+  if (!game || game.gameOver || game.currentPlayer !== 0) return;
+  const hand = game.players[0].hand;
+  const card = hand[idx];
+  if (!canPlay(card)) return;
+
+  // UNO penalty check
+  if (hand.length === 2 && !game.players[0].calledUno) {
+    showToast('You forgot to call UNO! Draw 2 cards! 😤');
+    for (let i = 0; i < 2; i++) hand.push(drawFromDeck());
+  }
+
+  hand.splice(idx, 1);
+  game.players[0].calledUno = false;
+
+  if (card.color === 'wild') {
+    game.pendingColorPick = card;
+    document.getElementById('colorModal').classList.add('show');
+    renderGame();
+    return;
+  }
+
+  executeCard(card, 0);
+}
+
+function pickColor(color) {
+  document.getElementById('colorModal').classList.remove('show');
+  if (!game || !game.pendingColorPick) return;
+  const card = game.pendingColorPick;
+  game.pendingColorPick = null;
+  const played = {color, value: card.value};
+  executeCard(played, 0);
+}
+
+function executeCard(card, playerIdx) {
+  game.discard.push(card);
+  game.currentColor = card.color === 'wild' ? (card.chosenColor || card.color) : card.color;
+  if (card.color !== 'wild') game.currentColor = card.color;
+  game.skipMessage = '';
+  game.hasDrawn = false;
+
+  // check win
+  if (game.players[playerIdx].hand.length === 0) {
+    game.gameOver = true;
+    renderGame();
+    setTimeout(() => showGameOver(playerIdx), 600);
+    return;
+  }
+
+  // special effects
+  if (card.value === 'skip') {
+    nextPlayer();
+    const skipped = game.players[game.currentPlayer];
+    game.skipMessage = skipped.name + ' got skipped! 🚫💨';
+    showToast(game.skipMessage);
+    nextPlayer();
+  } else if (card.value === 'reverse') {
+    if (game.players.length === 2) {
+      // acts like skip in 2-player
+      nextPlayer();
+      game.skipMessage = 'Reversed! 🔄💨';
+    } else {
+      game.direction *= -1;
+      game.skipMessage = 'Direction reversed! 🔄💨';
+    }
+    nextPlayer();
+  } else if (card.value === 'draw2') {
+    nextPlayer();
+    const victim = game.players[game.currentPlayer];
+    for (let i = 0; i < 2; i++) victim.hand.push(drawFromDeck());
+    game.skipMessage = victim.name + ' draws 2! 💀';
+    showToast(game.skipMessage);
+    nextPlayer();
+  } else if (card.value === 'wild4') {
+    nextPlayer();
+    const victim = game.players[game.currentPlayer];
+    for (let i = 0; i < 4; i++) victim.hand.push(drawFromDeck());
+    game.skipMessage = victim.name + ' draws 4! 🔥💀';
+    showToast(game.skipMessage);
+    nextPlayer();
+  } else {
+    nextPlayer();
+  }
+
+  renderGame();
+  setTimeout(() => maybeRunBotTurn(), 800);
+}
+
+function drawCard() {
+  if (!game || game.gameOver || game.currentPlayer !== 0 || game.hasDrawn) return;
+  const card = drawFromDeck();
+  game.players[0].hand.push(card);
+  game.hasDrawn = true;
+  showToast('Drew a card 🍃');
+
+  // If drawn card can be played
+  if (canPlay(card)) {
+    // allow playing it by re-rendering
+  }
+  renderGame();
+}
+
+function passTurn() {
+  if (!game || game.currentPlayer !== 0 || !game.hasDrawn) return;
+  game.hasDrawn = false;
+  game.skipMessage = '';
+  nextPlayer();
+  renderGame();
+  setTimeout(() => maybeRunBotTurn(), 600);
+}
+
+function callUno() {
+  if (!game || game.currentPlayer !== 0) return;
+  game.players[0].calledUno = true;
+  showToast('UNO! 🔥🍃');
+  document.getElementById('unoCallBtn').classList.remove('visible');
+}
+
+// ===== BOT AI =====
+function maybeRunBotTurn() {
+  if (!game || game.gameOver) return;
+  if (game.players[game.currentPlayer].isHuman) return;
+
+  setTimeout(() => botPlay(), 600 + Math.random() * 800);
+}
+
+function botPlay() {
+  if (!game || game.gameOver) return;
+  const pIdx = game.currentPlayer;
+  const p = game.players[pIdx];
+  if (p.isHuman) return;
+
+  const hand = p.hand;
+  const top = game.discard[game.discard.length - 1];
+
+  // find playable cards
+  let playable = [];
+  hand.forEach((c, i) => {
+    if (c.color === 'wild' || c.color === game.currentColor || c.value === top.value) {
+      playable.push({card: c, idx: i});
+    }
+  });
+
+  // UNO call (bot)
+  if (hand.length === 2 && Math.random() > 0.2) {
+    p.calledUno = true;
+    showToast(p.name + ' calls UNO! 🔥');
+  }
+
+  if (playable.length > 0) {
+    // Bot strategy based on difficulty
+    let choice;
+    if (game.difficulty === 'hard') {
+      // prefer action cards, then wild4, then color match
+      playable.sort((a, b) => {
+        const score = (c) => {
+          if (c.value === 'wild4') return 10;
+          if (c.value === 'draw2') return 8;
+          if (c.value === 'skip') return 7;
+          if (c.value === 'reverse') return 6;
+          if (c.value === 'wild') return 5;
+          return parseInt(c.value) || 0;
+        };
+        return score(b.card) - score(a.card);
+      });
+      choice = playable[0];
+    } else if (game.difficulty === 'medium') {
+      // slightly smart
+      const nonWild = playable.filter(p => p.card.color !== 'wild');
+      choice = nonWild.length > 0 ? nonWild[Math.floor(Math.random() * nonWild.length)] : playable[0];
+    } else {
+      choice = playable[Math.floor(Math.random() * playable.length)];
+    }
+
+    hand.splice(choice.idx, 1);
+    const card = choice.card;
+
+    if (card.color === 'wild') {
+      // pick best color
+      const colorCounts = {red:0, blue:0, green:0, yellow:0};
+      hand.forEach(c => { if (colorCounts[c.color] !== undefined) colorCounts[c.color]++; });
+      let bestColor = 'red';
+      let bestCount = -1;
+      for (const cl of COLORS) {
+        if (colorCounts[cl] > bestCount) { bestCount = colorCounts[cl]; bestColor = cl; }
+      }
+      const played = {color: bestColor, value: card.value};
+      showToast(p.name + ' plays ' + getCardDisplay(card) + ' → ' + bestColor + '!');
+      executeCard(played, pIdx);
+    } else {
+      showToast(p.name + ' plays ' + getCardDisplay(card));
+      executeCard(card, pIdx);
+    }
+  } else {
+    // draw
+    const drawn = drawFromDeck();
+    hand.push(drawn);
+    showToast(p.name + ' draws a card 💨');
+
+    // try to play drawn card
+    if (drawn.color === 'wild' || drawn.color === game.currentColor || drawn.value === top.value) {
+      setTimeout(() => {
+        if (game.gameOver) return;
+        const dIdx = hand.indexOf(drawn);
+        if (dIdx === -1) return;
+        hand.splice(dIdx, 1);
+        if (drawn.color === 'wild') {
+          const colorCounts = {red:0, blue:0, green:0, yellow:0};
+          hand.forEach(c => { if (colorCounts[c.color] !== undefined) colorCounts[c.color]++; });
+          let bestColor = 'green';
+          let bestCount = -1;
+          for (const cl of COLORS) {
+            if (colorCounts[cl] > bestCount) { bestCount = colorCounts[cl]; bestColor = cl; }
+          }
+          executeCard({color: bestColor, value: drawn.value}, pIdx);
+        } else {
+          executeCard(drawn, pIdx);
+        }
+      }, 600);
+    } else {
+      game.skipMessage = '';
+      nextPlayer();
+      renderGame();
+      setTimeout(() => maybeRunBotTurn(), 600);
+    }
+  }
+}
+
+function showGameOver(winnerIdx) {
+  const winner = game.players[winnerIdx];
+  const modal = document.getElementById('gameOverModal');
+  document.getElementById('winnerText').textContent = winner.isHuman ? 'You Win! 🏆' : winner.name + ' Wins!';
+  document.getElementById('winnerSub').textContent = winner.isHuman
+    ? 'Absolute legend, rolled up the competition 💨🍃'
+    : 'They blazed through their hand! Better luck next sesh 🌿';
+  modal.classList.add('show');
+}
+
+</script>
+</body>
+</html>
